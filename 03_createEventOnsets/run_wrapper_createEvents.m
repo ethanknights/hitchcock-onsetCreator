@@ -1,5 +1,15 @@
+%% --------------
+%% SETUP
+%% Rater - EK
+%% --------------
+raterStr = 'EK';
+stimStr = 'Face';
+nFramesToWrite = 30;  %ideally divisible by 11970 frames. Small = accuracy
 
-createEvents('JL','onlyFACE')
-%createEvents('JL','onlyFACE')
+%% ========================================================================
+%% Routine
+%% ========================================================================
+createEvents(raterStr,stimStr,nFramesToWrite)
+
 
 

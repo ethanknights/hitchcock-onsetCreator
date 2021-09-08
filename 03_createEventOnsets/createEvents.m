@@ -5,23 +5,16 @@
 %% Face, 22, 34
 %% Face, 45, 4
 
-function createEvents(raterStr,stimStr)
-%% ========================================================================
-%% EXAMPLE ARGUMENT
-%% ========================================================================
-% clear
-% raterStr = 'JL';
-% stimStr = 'onlyFACE';
-
+function createEvents(raterStr,stimStr,nFramesToWrite)
 %% ========================================================================
 %% In/Out Paths
 %% ========================================================================
 rootOutDir = 'data'; if~exist(rootOutDir,'dir'); mkdir(rootOutDir); end
-outDir = fullfile(rootOutDir,['rater-',raterStr]); mkdir(outDir);
+outDir = fullfile(rootOutDir,['rater-',raterStr],['nFrames-',num2str(nFramesToWrite)]); mkdir(outDir);
 
 rawD = load(...
   fullfile('../02_program_manualRating/data/',...
-  ['rater-',raterStr,'_','stimulus-',stimStr,'.mat'])); rawD=rawD.frames;
+  [raterStr],stimStr,['nFrames-',num2str(nFramesToWrite)],'frames.mat')); rawD=rawD.frames;
 d = rawD;
 
 %% ========================================================================
@@ -51,23 +44,23 @@ idx2 = [idx(1,1), idx(1,idx(2,:) > 1) ];  % List first event & all other noncons
 
 for i = 1:length(idx2)
   
-  currIdx = idx2(i)
+  currIdx = idx2(i);
 
-  out.eventStart(i) = tim(currIdx) %seconds
+  out.eventStart(i) = tim(currIdx); %seconds
   
   %% calc duration
-  tmpIdx = find( idx(1,:) == currIdx )
+  tmpIdx = find( idx(1,:) == currIdx );
   
   if idx(2,tmpIdx + 1) == 1 %if next event has 1 frame difference, then event has consec events (i.e. longer duration)
     
     %% set tmpD3 to the nConsecFrames
-    tmpD = idx(:,tmpIdx+1:end) %trim idx to all events AFTER given event
+    tmpD = idx(:,tmpIdx+1:end); %trim idx to all events AFTER given event
     
-    if i ~= length(idx2)  %if not final event, find first nonconsec event
-      tmpD2 = find(tmpD(2,:) > 1)
-      tmpD3 = tmpD2(1)
+    if i ~= length(idx2);  %if not final event, find first nonconsec event
+      tmpD2 = find(tmpD(2,:) > 1);
+      tmpD3 = tmpD2(1);
     else                  %go to end (as no nonconsec event exists after final event!)
-      tmpD3 = size(tmpD,2)
+      tmpD3 = size(tmpD,2);
     end
     
     out.durations(i) = tmpD3 * timDiff; %seconds (the consec nFrames)
@@ -76,13 +69,13 @@ for i = 1:length(idx2)
     out.durations(i) = timDiff; 
   end
   
-   out.endSecs(i) = out.eventStart(i) + out.durations(i)
+   out.endSecs(i) = out.eventStart(i) + out.durations(i);
 end
 
-%% Put in table 
+%% Store in table 
 t = [out.eventStart;out.durations;out.endSecs]';
-for i=2:length(t)-1;
-  t(i,4) = round( t(i+1,1) - t(i,3) , 2)
+for i = 2:length(t)-1
+  t(i,4) = round( t(i+1,1) - t(i,3) , 2);
 end
 
 t = array2table(t);
